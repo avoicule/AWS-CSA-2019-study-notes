@@ -40,12 +40,16 @@
 * Supports [multi-part upload](https://docs.aws.amazon.com/AmazonS3/latest/dev/mpuoverview.html)
 * Encryption
 * Access control (permissions on single files) and bucket policies (permissions on buckets)
+* MFA delete
+* Secure data with Access Control Lists and Bucket Policies
+
 
 ### [S3 Storage Tiers](https://aws.amazon.com/s3/storage-classes/)
 
 * S3 standard: 99.99% availability 11x9s durability (it sustains the loss of 2 facilities concurrently)
 * S3 IA: (Infrequently Accessed): For data that is accessed less frequently, but needs rapid access. You are charged a retrieval fee per GB retrieved
 * S3 One Zone IA: Like S3 IA but data is stored only in one AZ
+* S3 Intelligent Tier : moves between S3 standard and S3 IA
 * Glacier: Most cheap, used for archival only.
   * Expedited: few minutes for retrieval
   * Standard: 3-5 hours for retrieval
@@ -53,6 +57,7 @@
   * It encrypts data by default
   * Regionally availability
   * Designed with 11x9s durability, like S3
+ * Glacier Deep Archive - retrieval time of 12 hours
 
 ### [Charges](https://aws.amazon.com/s3/pricing/)
 
