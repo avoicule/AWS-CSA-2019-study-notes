@@ -68,6 +68,7 @@ S3 is charged for:
 * Storage management pricing
 * Data Transfer Pricing
 * Transfer acceleration (it's using CloudFront the AWS CDN) using edge locations
+* Cross Region Replication
 
 ### [Server side Encryption and ACL](https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingServerSideEncryption.html)
 
@@ -101,13 +102,16 @@ S3 is charged for:
 ### [S3 Cross region replication](https://docs.aws.amazon.com/AmazonS3/latest/dev/crr.html)
 
 * Regions must be unique
+* Versions need to be activated
 * Cross region replication doesn't replicate existing object by default, only new ones (after the replicate is set) will be replicated automatically.
 * In order to replicate the existing objects, you need to do a `cp` using the aws cli:
 
     `aws s3 cp --recursive s3://alessio-casco-versioning s3://alessio-casco-versioning-replica-sydney`
 * If you delete an object in the primary bucket, the delete action and markers won't be done or replicated in your remote bucket, this is a security function.
-Only creations and modifications are replicated to the bucket in the other regions NOT the delete
-* You can't replicate over multiple buckets, the maps are always 1-to-1
+* Only creations and modifications are replicated to the bucket in the other regions NOT the delete
+* You can't replicate over multiple buckets, the maps are always 1-to-1. 
+* You can replicate between buckets on the same account or different account
+* While configuring the replication you can change the storage type class (Ex:S3 -IA) or ownership
 
 ## [CloudFront](https://aws.amazon.com/cloudfront/)
 
@@ -123,14 +127,16 @@ Only creations and modifications are replicated to the bucket in the other regio
   * Distribution: Is the name AWS calls CDN's.
     * You can Have two types: Web that is for generic web contents and RTMP that is for video streaming
     * TTL: time to live of the cached object.
-
+* Web Distribution  - web sites; RTMP -Used for Media Streaming
+* Edge loations are not just readonly -  you can write to them too. Objects are cached for the life of the TTL - Time to live. You can clear cached objects but you can be charged
+* Restrict S3 URL - use restrict bucket access checkbox - If you want to require that users always access your Amazon S3 content using CloudFront URLs, not Amazon S3 URLs, click Yes. This is useful when you are using signed URLs or signed cookies to restrict access to your content
 ### [S3 Security & Encryption](https://aws.amazon.com/blogs/aws/new-amazon-s3-encryption-security-features/)
 
 * You can configure S3 to create access logs for requests made to the S3 bucket
 * Access control for buckets:
   * Bucket policies: Permission bucket wide
   * Access control list: Permissions that can be applied to the single object
-
+* S3 buckets can be configured to create access logs which log all the requests made to the S3 bucket. This can be sent to another bucjet and even anpther bucket in another account/
 * Encryption:
   * In transit: from to your bucket, HTTPS for example
   * At rest:
@@ -139,7 +145,7 @@ Only creations and modifications are replicated to the bucket in the other regio
       * Key Management Service: SS3-KMS the customer manages the keys
       * Server-side encryption: Here you manage the keys, and Amazon manage the writes
   * Client-side Encryption: You encrypt the data and you upload it encrypted to S3
-
+* How - Change encryption on the file  - choose from none. AER-256 or AWS-KMS
 ## [Amazon Storage](https://aws.amazon.com/products/storage/)
 
 ### [Amazon Storage Gateway](https://aws.amazon.com/storagegateway/)
@@ -147,7 +153,7 @@ Only creations and modifications are replicated to the bucket in the other regio
 What's an Amazon Storage Gateway: AWS Storage Gateway connects an on-premises software appliance with cloud-based storage to provide seamless integration with data security features between your on-premises IT environment and the AWS storage infrastructure.
 
 * File Gateway: For flat files, stored directly in S3. You can NFS Mount points
-* VOlume gateway (iSCSI): Block-based storage
+* VOlume gateway (iSCSI): Block-based storage (up to 32Tb)
   * Store volume (you keep all your data on prem)
   * Cached Volumes (you keep only the most recent data on prem)
 Tape Gateway (VTL): Virtual tapes
