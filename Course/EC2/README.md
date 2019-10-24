@@ -9,7 +9,7 @@ Amazon Elastic Compute Cloud (Amazon EC2) is a web service that provides secure,
 ### [EC2 Options](https://aws.amazon.com/ec2/pricing/)
 
 * [On demand](https://aws.amazon.com/ec2/pricing/on-demand/): You pay for computing capacity by per hour or per second depending on which instances you run.
-* [Reserved Instance (RI)](https://aws.amazon.com/ec2/pricing/reserved-instances/): Provide a significant discount (up to 75%) compared to On-Demand pricing and provide a capacity reservation when used in a specific Availability Zone. You have to enter a contract.
+* [Reserved Instance (RI)](https://aws.amazon.com/ec2/pricing/reserved-instances/): Provide a significant discount (up to 75%) compared to On-Demand pricing and provide a capacity reservation when used in a specific Availability Zone. You have to enter a contract. Reserved Pricing Types: Standard Reserved instances - more you pay up front and longer the contract,the greater de discount, Convertible Reserved Instances - change types of machines instance types (CPU,MEMORY), Scheduled Reserved Instances
 * [Spot](https://aws.amazon.com/ec2/spot/): Amazon EC2 Spot instances allow you to request spare Amazon EC2 computing capacity for up to 90% off the On-Demand price.
 
   * If you terminate an instance, you will pay for the complete hour.
@@ -21,7 +21,7 @@ Amazon Elastic Compute Cloud (Amazon EC2) is a web service that provides secure,
 
 
 
-* [Dedicated Hosts](https://aws.amazon.com/ec2/dedicated-hosts/): Is a physical server with EC2 instance capacity fully dedicated to your use.
+* [Dedicated Hosts](https://aws.amazon.com/ec2/dedicated-hosts/): Is a physical server with EC2 instance capacity fully dedicated to your use. Usefull for regulatory requirements that may not support multi-tenannt virtualization, licensing, can be purches on-demand(hourly)
 
 ### [What's EBS](https://aws.amazon.com/ebs/)
 
@@ -61,8 +61,10 @@ Remember also that you can create [snapshots of your RAID arrays](https://aws.am
 
 * Termination protection is turned off by default.
 * The EBS root volume by default is deleted at termination.
+* The root volume is NOW encrypting, however you can add EBS volumes as encrypted. The root volumes can also use a third party tool  such as bit locker to encrypt the root volume.
 * Default AMI's (provided by Amazon) cannot be encrypted.
 * Additional volumes can be encrypted.
+* When you terminate a EC2 instance by default the root volume is delated, however additional volumes are not.
 
 ## Security groups - Lab
 
@@ -75,9 +77,17 @@ A security group acts as a virtual firewall for your instance to control inbound
 * All security groups changes are applied immediately.
 * Security groups are stateful. For example, if you allow the request to come in, automatically responses can go out even if you don't have anything on the outbound section of your security group.
 * You can specify only allow rules, not deny rules.
+* You can have any number of EC2 instances within a security group and you can have multiple security groups attached to EC2 instances.
+* If you create an inbound rule allowing traffic in, the traffic is automaically allowed back out again.
+* You cannot block specific IP addresses using security groups, instead use Network Access Control Lists.
 
 ## EBS Volumes & Encrypt Root Device Volume - Lab
-
+* EBS - Elastic Block Storage
+* Types - General Purpose  (SSD) gp2 - most work loads - 16.000 max IOPS, size 1giB-16TiB
+		- Provisioned IOPS (SSD) io1 - Database - 64000 max IOPS, 4 GiB-16TiB
+		- Throughtput Optimised Hard Disk Drive - physical -st1 - big data and data warehouse - st1- 500 IOPS, 500 GiB-16TiB
+		- Cold HDD - sc1- File Servers, 250 IOPS, 500GiB-16TiB
+		- EBS Magnetic - standard, workload where data is infrequently accessed, 40-200 IOS, 1GiB-1TiB
 * Instances and Volumes MUST be in the same AZ
 * Snapshots exists in S3.
 * Snapshots are a point in time copies of Volumes.
@@ -88,16 +98,18 @@ A security group acts as a virtual firewall for your instance to control inbound
 * To move an EC2 volume from one AZ/Region to another, take a snap or an image of it, then you can copy them to the new AZ/Region.
 * Snapshots of encrypted volumes are encrypted automatically
 * Volumes restored from an encrypted snapshot will be encrypted as well.
+* You can share snapshots by only if they are uncrypted.
 * You can share snapshots only if they are not encrypted, these snapshots can be made public.
-
+* To move an EC2 ivolume from one AZ to another, take a snapshot of it, create an AMI from the snapshot and then use the AMI to launch the EC2 instance in a new AZ
+* To move an EC2 ivolume from a reagion o another, take a snapshot of it, create an AMI from the snapshot, copy the AMI from one reqion to another and then use the AMI to launch the EC2 instance in a new AZ
 ### [AMI Types](https://aws.amazon.com/amazon-linux-ami/instance-type-matrix/)
-
+* You can create AMI from both Volumes and Snapshots
 * [EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html): Amazon EBS provides durable, block-level storage volumes that you can attach to a running instance
   * EBS takes less time to provision.
   * EBS volumes can be kept once the instance is terminated.
 * [Instance Store / Ephemeral storage](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/InstanceStorage.html): This storage is located on disks that are physically attached to the host computer
-
   * Instance Store Volumes can't be stopped, if the host fails, you lose data.
+  * Instance Store volumes are created from template stored in Amazon S3.
   * You can reboot the instance without losing data.
   * You can not detach Instance Store Volumes.
   * Instance store volumes cannot be kept once the instance is terminated.
@@ -139,12 +151,12 @@ My suggestion is to create 2 instances instead and change the `index.html` in so
 * Alarms can be set to notify when a specific threshold is hit
 * Events can be used to perform actions when state changes happen in your AWS resources.
 * Logs can be aggregated in a single place to better troubleshoot. Remember that you need to install an agent on the EC2 instance.
-* By default, Matrics on EC2 instances are: CPU related, Disk related, Network related and Status check related.
+* By default, Matrics on EC2 instances are: CPU related, Disk related, Network related and Status check related. Memory Usage is NOT
 
 Remember that:
 
-* CloudWatch: is for monitoring resources
-* CloudTrail: is for auditing
+* CloudWatch: is for monitoring resources like  EC2 instances, Autoscalling groups, ELB, Route53 Helth Check, EBS Volume, Storage Gateway, Cloud Front
+* CloudTrail: is for auditing - monitors API calls
 
 ### IAM Roles with EC2 - Lab
 
